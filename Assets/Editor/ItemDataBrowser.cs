@@ -16,12 +16,12 @@ public class ItemDataBrowser : EditorWindow
         GetWindow<ItemDataBrowser>("Item Data Viewer");
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         LoadAndSortItems();
     }
 
-    void LoadAndSortItems()
+    private void LoadAndSortItems()
     {
         items.Clear();
 
@@ -41,7 +41,7 @@ public class ItemDataBrowser : EditorWindow
         items = items.OrderBy(i => i.ID).ToList();
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         if (GUILayout.Button("Reload"))
         {

@@ -14,7 +14,7 @@ public class PlayerMove : MonoBehaviour
     private void Start()
     {
     }
-    void Update()
+    private void Update()
     {
         //플레이어의 이동처리. 이동 중 반대 방향으로 급격히 꺾을 떄 감속 후 이동 기능을 추가.
         float h = Input.GetAxis("Horizontal");

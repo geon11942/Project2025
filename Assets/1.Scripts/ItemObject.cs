@@ -13,21 +13,21 @@ public class ItemObject : MonoBehaviour
     private float currentSpeed;
     private Rigidbody2D rb;
 
-    void Awake()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    void Start()
+    private void Start()
     {
         Item_Data_Set();
     }
 
-    void Update()
+    private void Update()
     {
         ItemMoving();
     }
     //플레이어에 의해 이동상태가 됐을 때 전달된 마우스의 위치 방향에 전달된 속도로 이동
-    void ItemMoving()
+    private void ItemMoving()
     {
         if (IsState != E_Item_State.PlayerMove) return;
 
@@ -101,7 +101,7 @@ public class ItemObject : MonoBehaviour
         }
     }
     //밀려나다가 플레이어와 벗어났을 경우 이동종료
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (IsState == E_Item_State.Stay)
         {

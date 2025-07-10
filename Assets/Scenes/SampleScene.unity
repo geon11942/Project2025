@@ -129,10 +129,9 @@ GameObject:
   m_Component:
   - component: {fileID: 40888553}
   - component: {fileID: 40888552}
-  - component: {fileID: 40888551}
   - component: {fileID: 40888550}
   m_Layer: 0
-  m_Name: MouseObject
+  m_Name: MouseCursorObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,19 +173,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.01
---- !u!114 &40888551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 40888548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f82d8da659d6683489eb609d73936abc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mousePosition: {x: 0, y: 0, z: 0}
 --- !u!114 &40888552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1430,6 +1416,7 @@ GameObject:
   - component: {fileID: 2138618921}
   - component: {fileID: 2138618920}
   - component: {fileID: 2138618925}
+  - component: {fileID: 2138618927}
   - component: {fileID: 2138618926}
   - component: {fileID: 2138618924}
   m_Layer: 0
@@ -1518,7 +1505,6 @@ MonoBehaviour:
   Using_Image: {fileID: 0}
   Holds: []
   Items: []
-  Item_Using: 0
   Item_UsingIndex: -1
 --- !u!70 &2138618926
 CapsuleCollider2D:
@@ -1557,6 +1543,21 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.77, y: 1.01}
   m_Direction: 0
+--- !u!114 &2138618927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138618919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82d8da659d6683489eb609d73936abc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePosition: {x: 0, y: 0, z: 0}
+  CursorObject: {fileID: 0}
+  Item_Using: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

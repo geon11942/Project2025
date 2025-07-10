@@ -4,17 +4,93 @@ using UnityEngine;
 public class MouseManager : MonoBehaviour
 {
     public Vector3 mousePosition;
-    void Start()
-    {
-        mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
-                    Input.mousePosition.y, -Camera.main.transform.position.z));
-    }
+    public Transform CursorObject;
 
+    private ItemControl ItemControlScript;
+    [SerializeField]
+    private bool Item_Using = false;
+
+    delegate int D_MouseDown(int key);
+
+    private void Start()
+    {
+        CursorObject = GameObject.Find("MouseCursorObject").transform;
+        mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
+                    Input.mousePosition.y, -Camera.main.transform.position.z));
+        CursorObject.position = mousePosition;
+
+        ItemControlScript=transform.GetComponent<ItemControl>();
+
+        Item_Using = false;
+    }
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
                     Input.mousePosition.y, -Camera.main.transform.position.z));
-        transform.position = mousePosition;
+        CursorObject.position = mousePosition;
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            //마우스 오른쪽 버튼을 눌렀을 때 아이템 사용상태가 되고 사용할 아이템을 지정함
+            Item_Using = true;
+            ItemControlScript.UsingIndexInit();
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            //아이템 사용상태를 종료하고 사용할 아이템의 이미지를 숨김
+            Item_Using = false;
+            ItemControlScript.Using_Image.gameObject.SetActive(false);
+        }
+        if (Item_Using)
+        {
+            float wheelInput = Input.GetAxis("Mouse ScrollWheel");
+            if (wheelInput > 0)
+            {
+                if (ItemControlScript.Item_UsingIndex < ItemControlScript.Holds.Length - 1)
+                {
+                    ItemControlScript.Item_UsingIndex++;
+                }
+                else
+                {
+                    ItemControlScript.Item_UsingIndex = 0;
+                }
+            }
+            else if (wheelInput < 0)
+            {
+                if (ItemControlScript.Item_UsingIndex > 0)
+                {
+                    ItemControlScript.Item_UsingIndex--;
+                }
+                else
+                {
+                    ItemControlScript.Item_UsingIndex = ItemControlScript.Holds.Length - 1;
+                }
+            }
+            if (ItemControlScript.Item_UsingIndex < 0)
+            {
+                ItemControlScript.Using_Image.gameObject.SetActive(false);
+            }
+            else
+            {
+                if (ItemControlScript.Items[ItemControlScript.Item_UsingIndex] != null)
+                {
+                    ItemControlScript.Using_Image.gameObject.SetActive(true);
+                    ItemControlScript.Using_Image.GetComponent<SpriteRenderer>().sprite = ItemControlScript.Items[ItemControlScript.Item_UsingIndex].GetComponent<SpriteRenderer>().sprite;
+                }
+            }
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            //왼쪽 마우스 버튼을 누르면 아이템 사용상태일 때는 아이템을 사용, 아닐 때는 마우스 위치의 아이템을 획득(마우스 획득은 아직 미완성)
+            if (Item_Using)
+            {
+                ItemControlScript.UsingItem(mousePosition);
+            }
+            else
+            {
+                ItemControlScript.GetItem();//미완성
+            }
+        }
     }
 }

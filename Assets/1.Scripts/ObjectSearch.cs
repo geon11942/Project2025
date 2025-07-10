@@ -9,7 +9,7 @@ public class ObjectSearch : MonoBehaviour
     private List<Transform> targetsInRange = new List<Transform>();
     private Transform closestTarget;
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         
         if (other.CompareTag(targetTag))
@@ -19,7 +19,7 @@ public class ObjectSearch : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag(targetTag))
         {
@@ -28,7 +28,7 @@ public class ObjectSearch : MonoBehaviour
         }
     }
 
-    void UpdateClosestTarget()
+    private void UpdateClosestTarget()
     {
         float closestDistance = float.MaxValue;
         Transform nearest = null;
@@ -48,9 +48,6 @@ public class ObjectSearch : MonoBehaviour
         closestTarget = nearest;
     }
 
-    void Update()
-    {
-    }
 
     // 외부에서 가장 가까운 대상 접근할 수 있게 속성 제공
     public Transform GetClosestTarget()
