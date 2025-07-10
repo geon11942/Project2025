@@ -49,6 +49,7 @@ public class ItemObject : MonoBehaviour
             }
             else
             {
+                timer = 0f;
                 IsState = E_Item_State.Stay;
             }
         }
@@ -82,11 +83,17 @@ public class ItemObject : MonoBehaviour
         {
             if (collision.CompareTag("Monster"))
             {
+                timer = 0f;
                 IsState = E_Item_State.Stay;//임시처리
                 return;
             }
         }
     }
+
+
+
+    //나중에 고쳐서 다른 방식으로 사용
+
     //어디에 소속되지 않고 이동중이 아닐 때 플레이어와 접촉할 경우 플레이어의 반대방향으로 밀려남
     private void OnTriggerStay2D(Collider2D collision)
     {

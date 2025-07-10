@@ -62,8 +62,9 @@ public class ItemControl : MonoBehaviour
         {
             if(Items[i] ==null)
             {
+                item.GetComponent<ItemObject>().IsState = E_Item_State.PlayerHold;
                 Items[i] = item.GetComponent<ItemObject>();
-                item.GetComponent<ItemObject>().IsState= E_Item_State.PlayerHold;
+                Items[i].IsState= E_Item_State.PlayerHold;
                 break;
             }
         }
