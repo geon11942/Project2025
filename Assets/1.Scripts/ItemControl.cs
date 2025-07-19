@@ -10,6 +10,9 @@ public class ItemControl : MonoBehaviour
     [SerializeField]
     public Transform Using_Image;
     [SerializeField]
+    private Transform Select_Cursor_Object;
+
+    [SerializeField]
     public Transform[] Holds;
     [SerializeField]
     public ItemObject[] Items;
@@ -21,6 +24,7 @@ public class ItemControl : MonoBehaviour
         Item_Search_Object = transform.GetChild(1).GetComponent<ObjectSearch>();
         Holds_Parent_Object=transform.GetChild(2).GetComponent<Transform>();
         Using_Image = transform.GetChild(3).GetComponent<Transform>();
+        Select_Cursor_Object = transform.GetChild(4).GetComponent<Transform>();
         Holds = new Transform[Holds_Parent_Object.childCount];
         Items= new ItemObject[Holds.Length];
         for (int i = 0; i < Holds_Parent_Object.childCount; i++) 
@@ -32,14 +36,21 @@ public class ItemControl : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift)) 
+        //왼쪽 쉬프트 버튼을 눌렀을 때 정해진 범위에 아이템이 있을 경우 아이템을 획득
+        if (Item_Search_Object.GetClosestTarget() != null)
         {
-            //왼쪽 쉬프트 버튼을 눌렀을 때 정해진 범위에 아이템이 있을 경우 아이템을 획득
-            if (Item_Search_Object.GetClosestTarget() != null) 
+            Select_Cursor_Object.gameObject.SetActive(true);
+            Vector3 cursorpos =new Vector3(Item_Search_Object.GetClosestTarget().position.x, Item_Search_Object.GetClosestTarget().position.y + 0.25f, Item_Search_Object.GetClosestTarget().position.z);
+            Select_Cursor_Object.position = cursorpos;
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 ItemHoldSetting(Item_Search_Object.GetClosestTarget());
                 UsingIndexInit();
             }
+        }
+        else
+        {
+            Select_Cursor_Object.gameObject.SetActive(false);
         }
         ObjectHolding();
 
@@ -70,11 +81,7 @@ public class ItemControl : MonoBehaviour
         }
         //손이 가득찼을 때에도 아이템을 획득하는 코드(추가 예정)
     }
-    public void GetItem()
-    {
-        //미완성
-    }
-    public void UsingItem(Vector3 mousepos)
+    public void UsingItem()
     {
         //아이템이 없을 경우 사용X. 있을 경우 아이템의 사용 타입에 따라 사용
         if(Item_UsingIndex<0)
@@ -84,13 +91,11 @@ public class ItemControl : MonoBehaviour
         switch(Items[Item_UsingIndex].GetComponent<ItemObject>().Item_Data.type)
         {
             case E_Item_Use_Type.Basic://기본 타입. 아이템을 약하게 마우스 방향으로 던짐
-                Items[Item_UsingIndex].StartMovement(mousepos, 5f);
-                Items[Item_UsingIndex].GetComponent<ItemObject>().IsState = E_Item_State.PlayerMove;
+                Items[Item_UsingIndex].d_Event();
                 Items[Item_UsingIndex] = null;
                 break;
             case E_Item_Use_Type.Throw://투척 타입. 아이템을 강하게 마우스 방향으로 던짐
-                Items[Item_UsingIndex].StartMovement(mousepos, 20f);
-                Items[Item_UsingIndex].GetComponent<ItemObject>().IsState = E_Item_State.PlayerMove;
+                Items[Item_UsingIndex].d_Event();
                 Items[Item_UsingIndex] = null;
                 break;
             case E_Item_Use_Type.Tool://추가 예정

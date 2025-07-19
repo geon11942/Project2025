@@ -10,7 +10,7 @@ public class MouseManager : MonoBehaviour
     [SerializeField]
     private bool Item_Using = false;
 
-    delegate int D_MouseDown(int key);
+    private D_OnClicked d_Click = null;
 
     private void Start()
     {
@@ -22,6 +22,9 @@ public class MouseManager : MonoBehaviour
         ItemControlScript=transform.GetComponent<ItemControl>();
 
         Item_Using = false;
+
+        d_Click += LeftMouse;
+        d_Click += RightMouse;
     }
     // Update is called once per frame
     private void Update()
@@ -30,6 +33,30 @@ public class MouseManager : MonoBehaviour
                     Input.mousePosition.y, -Camera.main.transform.position.z));
         CursorObject.position = mousePosition;
 
+        d_Click();//델리게이트 테스트
+
+        if (Item_Using)
+        {
+            MouseWheel();
+        }
+    }
+    private void LeftMouse()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            //왼쪽 마우스 버튼을 누르면 아이템 사용상태일 때는 아이템을 사용, 아닐 때는 마우스 위치의 아이템을 획득(마우스 획득은 아직 미완성)
+            if (Item_Using)
+            {
+                ItemControlScript.UsingItem();
+            }
+            else
+            {
+                //공격기능
+            }
+        }
+    }
+    private void RightMouse()
+    {
         if (Input.GetMouseButtonDown(1))
         {
             //마우스 오른쪽 버튼을 눌렀을 때 아이템 사용상태가 되고 사용할 아이템을 지정함
@@ -42,55 +69,44 @@ public class MouseManager : MonoBehaviour
             Item_Using = false;
             ItemControlScript.Using_Image.gameObject.SetActive(false);
         }
-        if (Item_Using)
+    }
+    private void MouseWheel()
+    {
+        float wheelInput = Input.GetAxis("Mouse ScrollWheel");
+        if (wheelInput > 0)
         {
-            float wheelInput = Input.GetAxis("Mouse ScrollWheel");
-            if (wheelInput > 0)
+            if (ItemControlScript.Item_UsingIndex < ItemControlScript.Holds.Length - 1)
             {
-                if (ItemControlScript.Item_UsingIndex < ItemControlScript.Holds.Length - 1)
-                {
-                    ItemControlScript.Item_UsingIndex++;
-                }
-                else
-                {
-                    ItemControlScript.Item_UsingIndex = 0;
-                }
-            }
-            else if (wheelInput < 0)
-            {
-                if (ItemControlScript.Item_UsingIndex > 0)
-                {
-                    ItemControlScript.Item_UsingIndex--;
-                }
-                else
-                {
-                    ItemControlScript.Item_UsingIndex = ItemControlScript.Holds.Length - 1;
-                }
-            }
-            if (ItemControlScript.Item_UsingIndex < 0)
-            {
-                ItemControlScript.Using_Image.gameObject.SetActive(false);
+                ItemControlScript.Item_UsingIndex++;
             }
             else
             {
-                if (ItemControlScript.Items[ItemControlScript.Item_UsingIndex] != null)
-                {
-                    ItemControlScript.Using_Image.gameObject.SetActive(true);
-                    ItemControlScript.Using_Image.GetComponent<SpriteRenderer>().sprite = ItemControlScript.Items[ItemControlScript.Item_UsingIndex].GetComponent<SpriteRenderer>().sprite;
-                }
+                ItemControlScript.Item_UsingIndex = 0;
             }
         }
-        if (Input.GetMouseButtonDown(0))
+        else if (wheelInput < 0)
         {
-            //왼쪽 마우스 버튼을 누르면 아이템 사용상태일 때는 아이템을 사용, 아닐 때는 마우스 위치의 아이템을 획득(마우스 획득은 아직 미완성)
-            if (Item_Using)
+            if (ItemControlScript.Item_UsingIndex > 0)
             {
-                ItemControlScript.UsingItem(mousePosition);
+                ItemControlScript.Item_UsingIndex--;
             }
             else
             {
-                ItemControlScript.GetItem();//미완성
+                ItemControlScript.Item_UsingIndex = ItemControlScript.Holds.Length - 1;
             }
         }
+        if (ItemControlScript.Item_UsingIndex < 0)
+        {
+            ItemControlScript.Using_Image.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (ItemControlScript.Items[ItemControlScript.Item_UsingIndex] != null)
+            {
+                ItemControlScript.Using_Image.gameObject.SetActive(true);
+                ItemControlScript.Using_Image.GetComponent<SpriteRenderer>().sprite = ItemControlScript.Items[ItemControlScript.Item_UsingIndex].GetComponent<SpriteRenderer>().sprite;
+            }
+        }
+        ItemControlScript.UsingIndexInit();
     }
 }
