@@ -1,5 +1,7 @@
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ItemObject : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class ItemObject : MonoBehaviour
     private Rigidbody2D rb;
 
     private bool Disposable = false;
+    private bool Bounce = false;
 
     private ItemEvent itemEvent;
     public D_ItemEvent d_Event;
@@ -28,7 +31,11 @@ public class ItemObject : MonoBehaviour
         Item_Data_Set();
         ItemEventSetting();
     }
-
+    public void SpawnInIt()
+    {
+        Item_Data_Set();
+        ItemEventSetting();
+    }
     private void Update()
     {
         ItemMoving();
@@ -64,6 +71,7 @@ public class ItemObject : MonoBehaviour
             {
                 timer = 0f;
                 IsState = E_Item_State.Stay;
+                Bounce = false;
             }
         }
     }    
@@ -96,12 +104,20 @@ public class ItemObject : MonoBehaviour
         {
             if (collision.CompareTag("Monster"))
             {
-                timer = 0f;
+                //1회성 아이템의 사용효과 발동
                 if(Disposable)
                 {
                     DisposableEffect();
                 }
-                IsState = E_Item_State.Stay;//임시처리
+
+                //몬스터 등의 오브젝트와 부딫히면 해당 오브젝트와의 반대방향으로 튕겨나감. 좀 더 수정 예정?
+                if(!Bounce)
+                {
+                    moveDirection= -(collision.transform.position - transform.position).normalized;
+                    Bounce = true;
+                    timer = 1f + timer * 2f;
+                    speed = speed * 2f;
+                }
                 return;
             }
         }
@@ -118,9 +134,9 @@ public class ItemObject : MonoBehaviour
         {
             if (collision.CompareTag("Player"))
             {
-                Vector2 pushDirection = (transform.position - collision.transform.position).normalized;
+                // Vector2 pushDirection = (transform.position - collision.transform.position).normalized;
 
-                rb.AddForce(pushDirection * 0.01f, ForceMode2D.Force);
+                //rb.AddForce(pushDirection * 0.01f, ForceMode2D.Force); 나중에 다시 사용
             }
         }
     }
@@ -131,7 +147,7 @@ public class ItemObject : MonoBehaviour
         {
             if (other.CompareTag("Player"))
             {
-                rb.linearVelocity = Vector2.zero;
+                //rb.linearVelocity = Vector2.zero; //나중에 고쳐서 다시 사용
             }
         }
     }
@@ -139,6 +155,9 @@ public class ItemObject : MonoBehaviour
     //아이템의 ID에 따라 사용효과를 설정하는 함수
     public void ItemEventSetting()
     {
+        if (Item_Data == null)
+            return;
+
         switch (Item_Data.ID)
         {
             case 0:
@@ -163,6 +182,9 @@ public class ItemObject : MonoBehaviour
         Destroy(gameObject);
         if (Item_Data.ID == 2)
         {
+            GameObject boomeffect = Instantiate(Resources.Load("Prefabs/BoomEffect") as GameObject);
+            boomeffect.transform.position = transform.position;
+            Destroy(boomeffect,0.1f);
             //폭탄이나 그외에 제거시 특수효과가 있는 아이템의 효과 발동
         }
     }

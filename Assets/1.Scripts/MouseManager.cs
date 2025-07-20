@@ -40,6 +40,8 @@ public class MouseManager : MonoBehaviour
             MouseWheel();
         }
     }
+
+    //마우스 왼쪽클릭 기능저장용 함수
     private void LeftMouse()
     {
         if (Input.GetMouseButtonDown(0))
@@ -55,6 +57,8 @@ public class MouseManager : MonoBehaviour
             }
         }
     }
+
+    //마우스 오른쪽클릭 기능저장용 함수
     private void RightMouse()
     {
         if (Input.GetMouseButtonDown(1))
@@ -70,6 +74,7 @@ public class MouseManager : MonoBehaviour
             ItemControlScript.Using_Image.gameObject.SetActive(false);
         }
     }
+    //마우스 휠 기능저장용 함수
     private void MouseWheel()
     {
         float wheelInput = Input.GetAxis("Mouse ScrollWheel");
