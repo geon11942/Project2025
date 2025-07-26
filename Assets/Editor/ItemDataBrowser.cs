@@ -25,7 +25,7 @@ public class ItemDataBrowser : EditorWindow
     {
         items.Clear();
 
-        string[] guids = AssetDatabase.FindAssets("t:ItemDataTable", new[] { "Assets/Resources/ItemDatas" }); // 원하는 폴더 경로로 수정
+        string[] guids = AssetDatabase.FindAssets("t:ItemDataTable", new[] { "Assets/Resources/Datas/ItemDatas" }); // 원하는 폴더 경로로 수정
 
         foreach (string guid in guids)
         {

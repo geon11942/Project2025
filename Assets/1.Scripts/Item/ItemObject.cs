@@ -51,6 +51,12 @@ public class ItemObject : MonoBehaviour
         {
             // movingTime만큼 전달된 속도로 이동
             transform.position = Vector3.MoveTowards(transform.position, transform.position + moveDirection, currentSpeed * Time.deltaTime);
+            if(Item_Data.ID == 4)
+            {
+                float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+            }
+
         }
         else
         {
@@ -169,6 +175,13 @@ public class ItemObject : MonoBehaviour
             case 2:
                 d_Event += Throw;
                 Disposable = true;
+                break;
+            case 3:
+                d_Event += Throw;
+                Disposable = true;
+                break;
+            case 4:
+                d_Event += Throw;
                 break;
             default:
                 d_Event += Basic;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//이건 아이템 전용 코드. 범용 코드는 따로 만들기
 public class ObjectSearch : MonoBehaviour
 {
     //상속된 오브젝트에 collider에 충돌한 오브젝트 중에서 targetTag와 같은 태그의 오브젝트를 저장하고
