@@ -43,7 +43,7 @@ public class ItemObject : MonoBehaviour
     //플레이어에 의해 이동상태가 됐을 때 전달된 마우스의 위치 방향에 전달된 속도로 이동
     private void ItemMoving()
     {
-        if (IsState != E_Item_State.PlayerMove) return;
+        if (!(IsState == E_Item_State.PlayerMove || IsState ==E_Item_State.FreeMove)) return;
 
         timer += Time.deltaTime;
 
@@ -110,8 +110,11 @@ public class ItemObject : MonoBehaviour
         {
             if (collision.CompareTag("Monster"))
             {
+
+                collision.GetComponent<MonsterBodyParts>()?.HitPlayerAttack(1f);
+
                 //1회성 아이템의 사용효과 발동
-                if(Disposable)
+                if (Disposable)
                 {
                     DisposableEffect();
                 }
@@ -123,6 +126,7 @@ public class ItemObject : MonoBehaviour
                     Bounce = true;
                     timer = 1f + timer * 2f;
                     speed = speed * 2f;
+                    IsState = E_Item_State.FreeMove;
                 }
                 return;
             }

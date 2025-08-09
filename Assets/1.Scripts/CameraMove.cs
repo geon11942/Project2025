@@ -4,6 +4,8 @@ public class CameraMove : MonoBehaviour
 {
     void Start()
     {
+        Vector3 pos = new Vector3(Target.position.x, Target.position.y,transform.position.z);
+        transform.position = pos;
         m_TargetOffset = Target.position - transform.position;
     }
 

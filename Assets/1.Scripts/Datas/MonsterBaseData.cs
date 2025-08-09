@@ -7,7 +7,7 @@ public class MonsterBaseDataTable : ScriptableObject
     public string Name;
 
     public E_Monster_Body_Type Body_Type;
-    public E_Monster_Player_Reaction_Type Reaction_Type;
+    public E_Monster_Player_Reaction_Type Default_Reaction_Type;
 
     public float MaxHp;
     public float MaxMana;
@@ -16,6 +16,7 @@ public class MonsterBaseDataTable : ScriptableObject
     public float Speed;
     public float ManaRegenSpeed;
 
+    [Range(0.1f, 2f)]
     public float Intelligence;
     [Range(0f, 50f)]
     public float FOVRange;

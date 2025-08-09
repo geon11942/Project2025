@@ -11,8 +11,18 @@ public class MonsterData : MonoBehaviour
 
     public float PlayerHostility;
 
+    public E_Monster_Current_Action MonsterCurentAction;
+
+   // [SerializeField]
+    //private 
     private void Start()
     {
         PlayerHostility = MonsterBaseData.MinPlayerHostility;
+    }
+
+    public void HitPlayerAttack(float damage)
+    {
+        //대미지를 입는 코드
+        GetComponent<MonsterMove>()?.ForcePlayerCheck();
     }
 }
