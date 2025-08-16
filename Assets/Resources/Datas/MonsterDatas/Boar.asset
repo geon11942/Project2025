@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Boar
   m_EditorClassIdentifier: 
   Name: BigTestRizzard
-  Body_Type: 1
-  Reaction_Type: 1
+  Body_Type: 0
+  Default_Reaction_Type: 0
   MaxHp: 200
   MaxMana: 100
   Power: 5
@@ -25,5 +25,5 @@ MonoBehaviour:
   FOVAngle: 45
   MinPlayerHostility: 0.5
   RelationshipGroup:
-    Red: 4
+    Red: 5
     Yellow: 0

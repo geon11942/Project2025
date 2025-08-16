@@ -26,4 +26,4 @@ MonoBehaviour:
   MinPlayerHostility: 0.3
   RelationshipGroup:
     Red: 3
-    Yellow: 5
+    Yellow: 4
