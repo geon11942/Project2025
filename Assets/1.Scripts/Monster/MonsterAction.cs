@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using static UnityEditor.Progress;
 
-//몬스터의 이동이나 시야, 공격 등의 행동을 실행하는 코드
-public class MonsterMove : MonoBehaviour
+public class MonsterAction : MonoBehaviour
 {
     private MonsterData monsterData;
     private D_Action Action = null;// 몬스터마다 지정할 행동을 담아둠
@@ -39,33 +38,55 @@ public class MonsterMove : MonoBehaviour
     private void Start()
     {
         monsterData = gameObject.GetComponent<MonsterData>();
-        for(int i = 0; i < transform.GetChild(0).transform.childCount; i++)
-        {
-            MyParts.Add(transform.GetChild(0).transform.GetChild(i));
-        }
-        SightObject = transform.GetChild(1);
+        SightObject = transform.GetChild(0);
 
         SpawnPos = transform.position;
+
+        MyParts.Add(transform);
 
         ActionSetting();
     }
     private void Update()
     {
+        if(monsterData.States.Contains("Stun"))
+        {
+            ActionTime += Time.deltaTime;
+            if (ActionTime > 3f) 
+            {
+                monsterData.States.Remove("Stun");
+            }
+            else
+            {
+                return;
+            }
+        }
         if (Action != null)
         {
             Action();
         }
-        if(AttackAction != null)
+        if (AttackAction != null)
         {
             AttackAction();
         }
-        
+
     }
 
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    ActionTime = 0f;
-    //}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Wall")
+        {
+            if (monsterData.States.Contains("Charge"))
+            {
+                monsterData.States.Add("Stun");
+                monsterData.States.Remove("Charge");
+                monsterData.MonsterCurentAction = E_Monster_Current_Action.Move;
+                ActionTime = 0f;
+            }
+        }
+    }
+
+
     private void ActionSetting()
     {
         switch (monsterData.MonsterBaseData.Name)
@@ -124,11 +145,11 @@ public class MonsterMove : MonoBehaviour
         if (DeadCheck())
             return;
 
-        if (ActionTime<=0f)
+        if (ActionTime <= 0f)
         {
             TargetObject = null;
         }
-        if(DetectedObjects.Count == 0) return;
+        if (DetectedObjects.Count == 0) return;
 
         float Dist;
 
@@ -138,31 +159,31 @@ public class MonsterMove : MonoBehaviour
         foreach (var target in DetectedObjects)
         {
             TargetPoint = 0f;
-            Dist =Vector2.Distance(transform.position, target.position);
-            if(target.tag=="Player")
+            Dist = Vector2.Distance(transform.position, target.position);
+            if (target.tag == "Player")
             {
-                TargetPoint= Dist * monsterData.PlayerHostility * 1f; //1f는 나중에 평판 별로 정해진 수치를 받아 변경되게 바꾸기
+                TargetPoint = Dist * monsterData.PlayerHostility * 1f; //1f는 나중에 평판 별로 정해진 수치를 받아 변경되게 바꾸기
             }
             else
             {
                 TargetPoint = 20f;
                 //다른 몬스터에 대한 점수판정
             }
-            if (TargetPoint > SelectPoint) 
+            if (TargetPoint > SelectPoint)
             {
                 GameObject awakeObject = null;
-                if (TargetObject != null) 
+                if (TargetObject != null)
                 {
                     awakeObject = TargetObject.gameObject;
                 }
                 SelectPoint = TargetPoint;
-                TargetObject= target;
-                if(awakeObject != null)
+                TargetObject = target;
+                if (awakeObject != null)
                 {
                     if (awakeObject == TargetObject)
                         break;
                 }
-                if(monsterData.MonsterCurentAction !=E_Monster_Current_Action.Attack)
+                if (monsterData.MonsterCurentAction != E_Monster_Current_Action.Attack)
                 {
                     ActionTime = SetTime;
                 }
@@ -170,7 +191,7 @@ public class MonsterMove : MonoBehaviour
                 monsterData.MonsterCurentAction = E_Monster_Current_Action.Move;
             }
         }
-        
+
     }
 
     //타겟오브젝트가 있으면 해당 오브젝트 추적. 나중엔 없을 때 자유행동하게 수정
@@ -179,7 +200,7 @@ public class MonsterMove : MonoBehaviour
         if (DeadCheck())
             return;
 
-        if(monsterData.MonsterCurentAction == E_Monster_Current_Action.Move)
+        if (monsterData.MonsterCurentAction == E_Monster_Current_Action.Move)
         {
             if (TargetObject != null)
             {
@@ -190,7 +211,7 @@ public class MonsterMove : MonoBehaviour
                 {
                     Vector2 moveDir = direction.normalized;
 
-                    transform.position += (Vector3)(moveDir * monsterData.MonsterBaseData.Speed * Time.deltaTime);
+                    transform.position += (Vector3)(moveDir * monsterData.FinalSpeed * Time.deltaTime);
 
                     SpriteRotation(moveDir);
 
@@ -200,7 +221,7 @@ public class MonsterMove : MonoBehaviour
                     if (monsterData.MonsterCurentAction == E_Monster_Current_Action.Move)
                     {
                         ActionTime = SetTime * 5f;
-                        if(AttackTime <= 0 )
+                        if (AttackTime <= 0)
                         {
                             AttackTime = 1.5f - (monsterData.MonsterBaseData.Intelligence * 0.5f);
                         }
@@ -219,10 +240,11 @@ public class MonsterMove : MonoBehaviour
 
         if (TargetObject == null)
         {
-            if (!MovePosCheck) 
+            ActionTime -= Time.deltaTime * 0.2f;
+            if (!MovePosCheck)
             {
                 MovePosCheck = true;
-                MovePos = new Vector3 (SpawnPos.x + Random.Range(-3f,3f), SpawnPos.y + Random.Range(-3f, 3f), 0);
+                MovePos = new Vector3(SpawnPos.x + Random.Range(-3f, 3f), SpawnPos.y + Random.Range(-3f, 3f), 0);
                 ActionTime = Random.Range(-SetTime * 0.5f, SetTime * 2);
             }
             Vector2 direction = (MovePos - transform.position);
@@ -230,19 +252,19 @@ public class MonsterMove : MonoBehaviour
 
             if (distance < 0.1f)
             {
-                ActionTime -= Time.deltaTime;
-                if(ActionTime < 0)
-                {
-                    MovePosCheck = false;
-                }
+                ActionTime -= Time.deltaTime *0.8f;
             }
             else
             {
                 Vector2 moveDir = direction.normalized;
 
-                transform.position += (Vector3)(moveDir * monsterData.MonsterBaseData.Speed * Time.deltaTime);
+                transform.position += (Vector3)(moveDir * monsterData.FinalSpeed * Time.deltaTime);
 
                 SpriteRotation(moveDir);
+            }
+            if (ActionTime < 0)
+            {
+                MovePosCheck = false;
             }
         }
     }
@@ -261,7 +283,7 @@ public class MonsterMove : MonoBehaviour
                 float distance = direction.magnitude;
                 Vector2 moveDir = direction.normalized;
 
-                transform.position += (Vector3)(moveDir * (monsterData.MonsterBaseData.Speed*2) * Time.deltaTime);
+                transform.position += (Vector3)(moveDir * (monsterData.FinalSpeed * 2) * Time.deltaTime);
 
                 SpriteRotation(moveDir);
 
@@ -269,7 +291,7 @@ public class MonsterMove : MonoBehaviour
                 {
                     ActionTime -= Time.deltaTime * 0.5f;
                     SpawnPos = transform.position;
-                    if(MovePosCheck)
+                    if (MovePosCheck)
                     {
                         MovePosCheck = false;
                     }
@@ -283,7 +305,7 @@ public class MonsterMove : MonoBehaviour
     //돌진 공격 함수.
     private void ChargeAttack()
     {
-        if(monsterData.MonsterCurentAction==E_Monster_Current_Action.Attack)
+        if (monsterData.MonsterCurentAction == E_Monster_Current_Action.Attack)
         {
             AttackTime -= Time.deltaTime;
             if (AttackTime > 0.5f)
@@ -294,11 +316,20 @@ public class MonsterMove : MonoBehaviour
             }
             else
             {
-                transform.position += (Vector3)(transform.right * (monsterData.MonsterBaseData.Speed * monsterData.MonsterBaseData.Power) * Time.deltaTime);
+                transform.position += (Vector3)(SightObject.right * (monsterData.FinalSpeed * monsterData.MonsterBaseData.Power) * Time.deltaTime);
+                if(!monsterData.States.Contains("Charge"))
+                {
+                    monsterData.States.Add("Charge");
+                }
+
             }
-            if(AttackTime <= 0)
+            if (AttackTime <= 0)
             {
                 monsterData.MonsterCurentAction = E_Monster_Current_Action.Move;
+                if (monsterData.States.Contains("Charge"))
+                {
+                    monsterData.States.Remove("Charge");
+                }
             }
         }
     }
@@ -309,18 +340,14 @@ public class MonsterMove : MonoBehaviour
     private void SpriteRotation(Vector2 movedir)
     {
         angle = Mathf.Atan2(movedir.y, movedir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-        foreach (var item in MyParts)
+        SightObject.transform.rotation = Quaternion.Euler(0, 0, angle);
+        if (angle < 90f && angle > -90f)
         {
-            item.rotation = Quaternion.Euler(0, 0, transform.rotation.z + (360f - transform.rotation.z));
-            if (angle < 90f && angle > -90f)
-            {
-                item.GetComponent<SpriteRenderer>().flipX = false;
-            }
-            else
-            {
-                item.GetComponent<SpriteRenderer>().flipX = true;
-            }
+            transform.GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else
+        {
+            transform.GetComponent<SpriteRenderer>().flipX = true;
         }
     }
 
@@ -329,22 +356,13 @@ public class MonsterMove : MonoBehaviour
     public void ForcePlayerCheck()
     {
         TargetObject = GameObject.Find("Player").transform;
-        ActionTime = SetTime*3f;
-        monsterData.MonsterCurentAction=E_Monster_Current_Action.Move;
+        ActionTime = SetTime * 3f;
+        monsterData.MonsterCurentAction = E_Monster_Current_Action.Move;
     }
 
     public void HitWall()
     {
         ActionTime = 0f;
-        foreach (var item in MyParts)
-        {
-            item.transform.position = new Vector3(0, 0, 0);
-
-        }
-        if (monsterData.MonsterBaseData.Body_Type == E_Monster_Body_Type.Only)
-        {
-            transform.position = MyParts[0].transform.position;
-        }
     }
 
     //이 몬스터가 죽었는지 확인하는 함수

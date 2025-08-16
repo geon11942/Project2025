@@ -108,10 +108,24 @@ public class ItemObject : MonoBehaviour
     {
         if (IsState == E_Item_State.PlayerMove)
         {
-            if (collision.CompareTag("Monster"))
+            if(collision.CompareTag("Wall"))
             {
 
+                //1회성 아이템의 사용효과 발동
+                if (Disposable)
+                {
+                    DisposableEffect();
+                }
+
+                timer = 0f;
+                IsState = E_Item_State.Stay;
+                Bounce = false;
+                return;
+            }
+            if (collision.CompareTag("Monster"))
+            {
                 collision.GetComponent<MonsterBodyParts>()?.HitPlayerAttack(1f);
+                collision.GetComponent<MonsterData>()?.HitPlayerAttack(1f);
 
                 //1회성 아이템의 사용효과 발동
                 if (Disposable)
